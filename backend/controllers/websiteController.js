@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import crypto from "node:crypto";
 
 import Website from "../models/Website.js";
 import Membership from "../models/Membership.js";
 import Organization from "../models/Organization.js";
-import MonitoringCheck from "../models/MonitoringCheck.js";
-import Alert from "../models/Alert.js";
+import ContactFormMonitor from "../models/ContactFormMonitor.js";
+import { validatePublicWebsite } from "../utils/websiteSecurity.js";
 
 // ========================================
 // CREATE NEW WEBSITE
@@ -45,9 +46,19 @@ export const createWebsite = async (req, res) => {
       });
     }
 
+    try {
+      await validatePublicWebsite(url);
+    } catch (validationError) {
+      return res.status(400).json({
+        success: false,
+        message: validationError.message,
+      });
+    }
+
     const website = await Website.create({
       name: name || new URL(url).hostname,
       url,
+      monitoringUrl: url,
       organization: organizationId,
       addedBy: req.user._id,
     });
@@ -103,6 +114,7 @@ export const getWebsites = async (req, res) => {
 
     const websites = await Website.find({
       organization: organizationId,
+      isArchived: { $ne: true },
     }).sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -137,6 +149,13 @@ export const getWebsite = async (req, res) => {
     const website = await Website.findById(id);
 
     if (!website) {
+      return res.status(404).json({
+        success: false,
+        message: "Website not found.",
+      });
+    }
+
+    if (website.isArchived) {
       return res.status(404).json({
         success: false,
         message: "Website not found.",
@@ -194,6 +213,13 @@ export const updateWebsite = async (req, res) => {
       });
     }
 
+    if (website.isArchived) {
+      return res.status(404).json({
+        success: false,
+        message: "Website not found.",
+      });
+    }
+
     const membership = await Membership.findOne({
       user: req.user._id,
       organization: website.organization,
@@ -217,10 +243,29 @@ export const updateWebsite = async (req, res) => {
     if (name !== undefined) website.name = name;
 
     if (url !== undefined) {
-      website.url = url;
-      website.verificationStatus = "pending";
-      website.verifiedAt = null;
-      website.isMonitoringEnabled = false;
+      try {
+        await validatePublicWebsite(url);
+      } catch (validationError) {
+        return res.status(400).json({
+          success: false,
+          message: validationError.message,
+        });
+      }
+
+      if (url !== website.url) {
+        const changedAt = new Date();
+        website.url = url;
+        website.monitoringUrl = url;
+        website.monitoringUrlChangedAt = changedAt;
+        website.verificationStatus = "pending";
+        website.verificationToken = crypto.randomBytes(32).toString("hex");
+        website.verifiedAt = null;
+        website.isMonitoringEnabled = false;
+        website.lastStatus = "unknown";
+        website.confirmedStatus = "unknown";
+        website.lastCheckedAt = null;
+        website.consecutiveFailures = 0;
+      }
     }
 
     await website.save();
@@ -272,6 +317,13 @@ export const toggleWebsiteMonitoring = async (req, res) => {
     const website = await Website.findById(id);
 
     if (!website) {
+      return res.status(404).json({
+        success: false,
+        message: "Website not found.",
+      });
+    }
+
+    if (website.isArchived) {
       return res.status(404).json({
         success: false,
         message: "Website not found.",
@@ -378,11 +430,87 @@ export const deleteWebsite = async (req, res) => {
       });
     }
 
-    await Promise.all([
-      MonitoringCheck.deleteMany({ website: website._id }),
-      Alert.deleteMany({ website: website._id }),
-      Website.findByIdAndDelete(id),
-    ]);
+    if (website.isArchived) {
+      return res.status(200).json({
+        success: true,
+        message: "Website deleted successfully!",
+      });
+    }
+
+    const archivedAt = new Date();
+
+    let session = null;
+
+    try {
+      session = await mongoose.startSession();
+      await session.withTransaction(async () => {
+        await ContactFormMonitor.updateMany(
+          { organization: website.organization, website: website._id },
+          {
+            $set: {
+              isArchived: true,
+              archivedAt,
+              isMonitoringEnabled: false,
+            },
+          },
+          { session },
+        );
+
+        await Website.findByIdAndUpdate(
+          website._id,
+          {
+            $set: {
+              isArchived: true,
+              archivedAt,
+              archivedBy: req.user._id,
+              isMonitoringEnabled: false,
+              confirmedStatus: "unknown",
+              lastStatus: "unknown",
+              lastCheckedAt: null,
+              consecutiveFailures: 0,
+            },
+          },
+          { session, returnDocument: "after" },
+        );
+      });
+    } catch (transactionError) {
+      console.error(
+        "Website archive transaction unavailable:",
+        transactionError.message,
+      );
+
+      await ContactFormMonitor.updateMany(
+        { organization: website.organization, website: website._id },
+        {
+          $set: {
+            isArchived: true,
+            archivedAt,
+            isMonitoringEnabled: false,
+          },
+        },
+      );
+
+      await Website.findByIdAndUpdate(
+        website._id,
+        {
+          $set: {
+            isArchived: true,
+            archivedAt,
+            archivedBy: req.user._id,
+            isMonitoringEnabled: false,
+            confirmedStatus: "unknown",
+            lastStatus: "unknown",
+            lastCheckedAt: null,
+            consecutiveFailures: 0,
+          },
+        },
+        { returnDocument: "after" },
+      );
+    } finally {
+      if (session) {
+        await session.endSession();
+      }
+    }
 
     return res.status(200).json({
       success: true,

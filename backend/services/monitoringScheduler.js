@@ -150,6 +150,7 @@ export const startMonitoringScheduler = () => {
       const websites = await Website.find({
         verificationStatus: "verified",
         isMonitoringEnabled: true,
+        isArchived: { $ne: true },
       });
 
       console.log(`Found ${websites.length} websites to monitor.`);

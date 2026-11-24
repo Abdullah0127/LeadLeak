@@ -1,4 +1,5 @@
 import MonitoringCheck from "../models/MonitoringCheck.js";
+import Website from "../models/Website.js";
 
 // ==========================================
 // UPTIME ANALYTICS CONFIGURATION
@@ -29,14 +30,20 @@ export const getWebsiteUptimeAnalytics = async ({
 
   const endTime = new Date();
   const startTime = new Date(endTime.getTime() - PERIODS[period]);
+  const website = await Website.findById(websiteId).select("monitoringUrlChangedAt").lean();
+  const effectiveStartTime =
+    website?.monitoringUrlChangedAt &&
+    new Date(website.monitoringUrlChangedAt).getTime() > startTime.getTime()
+      ? new Date(website.monitoringUrlChangedAt)
+      : startTime;
 
-  const totalDurationMs = endTime.getTime() - startTime.getTime();
+  const totalDurationMs = endTime.getTime() - effectiveStartTime.getTime();
 
   // Fetch observations beginning slightly before the period.
   // A recent observation before the period can establish
   // the website's status at the beginning of the period.
   const queryStart = new Date(
-    startTime.getTime() - MAX_OBSERVATION_AGE_MS,
+    effectiveStartTime.getTime() - MAX_OBSERVATION_AGE_MS,
   );
 
   const checks = await MonitoringCheck.find({
@@ -78,7 +85,7 @@ export const getWebsiteUptimeAnalytics = async ({
 
     const intervalStart = Math.max(
       checkedAt,
-      startTime.getTime(),
+      effectiveStartTime.getTime(),
     );
 
     const intervalDuration = Math.max(
@@ -126,7 +133,7 @@ export const getWebsiteUptimeAnalytics = async ({
         typeof check.responseTime === "number" &&
         Number.isFinite(check.responseTime) &&
         check.responseTime >= 0 &&
-        new Date(check.checkedAt) >= startTime,
+        new Date(check.checkedAt) >= effectiveStartTime,
     )
     .map((check) => check.responseTime);
 
@@ -150,7 +157,7 @@ export const getWebsiteUptimeAnalytics = async ({
     period,
 
     range: {
-      start: startTime,
+      start: effectiveStartTime,
       end: endTime,
     },
 
@@ -177,7 +184,7 @@ export const getWebsiteUptimeAnalytics = async ({
 
     checks: {
       total: checks.filter(
-        (check) => new Date(check.checkedAt) >= startTime,
+        (check) => new Date(check.checkedAt) >= effectiveStartTime,
       ).length,
     },
 

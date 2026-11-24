@@ -2,7 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { rateLimit } from "express-rate-limit";
+import net from "node:net";
 import connectDB from "./config/db.js";
+import { isPublicIP } from "./utils/websiteSecurity.js";
 
 // ==========================================
 // ROUTE IMPORTS
@@ -33,15 +35,90 @@ app.disable("x-powered-by");
 // MIDDLEWARE
 // ==========================================
 
-const allowedOrigins = (process.env.CLIENT_URL || "")
+const configuredOrigins = (process.env.CLIENT_URL || "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const isProduction =
+  !["development", "test"].includes(
+    String(process.env.NODE_ENV || "").toLowerCase(),
+  );
+
+if (isProduction && configuredOrigins.length === 0) {
+  throw new Error("Production startup requires CLIENT_URL.");
+}
+
+const developmentOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
+];
+
+const allowedOrigins = [];
+
+for (const origin of [
+  ...configuredOrigins,
+  ...(isProduction ? [] : developmentOrigins),
+]) {
+  let parsed;
+  try {
+    parsed = new URL(origin);
+  } catch {
+    throw new Error("Invalid configured CORS origin.");
+  }
+
+  if (
+    !["http:", "https:"].includes(parsed.protocol) ||
+    parsed.origin !== origin ||
+    parsed.pathname !== "/" ||
+    origin.includes("?") ||
+    origin.includes("#") ||
+    parsed.search ||
+    parsed.hash ||
+    parsed.username ||
+    parsed.password
+  ) {
+    throw new Error("Invalid configured CORS origin.");
+  }
+
+  const hostname = parsed.hostname
+    .replace(/^\[|\]$/g, "")
+    .toLowerCase()
+    .replace(/\.$/, "");
+  const ipVersion = net.isIP(hostname);
+  const localHostname =
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname.endsWith(".local") ||
+    (ipVersion > 0 && !isPublicIP(hostname));
+
+  if (isProduction && localHostname) {
+    throw new Error("Localhost origins are not allowed in production.");
+  }
+
+  allowedOrigins.push(parsed.origin);
+}
+
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  if (isProduction) {
+    res.setHeader(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains",
+    );
+  }
+  next();
+});
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       return callback(new Error("Origin is not allowed by CORS."));
@@ -55,6 +132,25 @@ app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 20,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+  }),
+);
+
+app.use(
+  "/api/verification",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 30,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+  }),
+);
+app.use(
+  "/api/monitoring",
+  rateLimit({
+    windowMs: 5 * 60 * 1000,
+    limit: 60,
     standardHeaders: "draft-8",
     legacyHeaders: false,
   }),
@@ -86,6 +182,18 @@ app.get("/api/health", (req, res) => {
     message: "LeadLeak backend is running!",
     timestamp: new Date().toISOString(),
   });
+});
+
+// Return a controlled error for rejected CORS origins.
+app.use((error, req, res, next) => {
+  if (error?.message === "Origin is not allowed by CORS.") {
+    return res.status(403).json({
+      success: false,
+      message: "Origin is not allowed.",
+    });
+  }
+
+  return next(error);
 });
 
 // ==========================================

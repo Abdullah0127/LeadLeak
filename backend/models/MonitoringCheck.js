@@ -59,6 +59,12 @@ const monitoringCheckSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+
+    monitoredUrl: {
+      type: String,
+      default: null,
+      trim: true,
+    },
   },
   { timestamps: true },
 );
@@ -68,6 +74,7 @@ const monitoringCheckSchema = new mongoose.Schema(
 // ==========================================
 
 monitoringCheckSchema.index({ website: 1, checkedAt: -1 });
+monitoringCheckSchema.index({ organization: 1, checkedAt: -1 });
 
 const MonitoringCheck = mongoose.model(
   "MonitoringCheck",

@@ -50,6 +50,7 @@ export const validateContactFormMonitor = async ({
     _id: website,
     organization,
     verificationStatus: "verified",
+    isArchived: { $ne: true },
   });
 
   if (!websiteRecord) {
@@ -122,6 +123,7 @@ export const getOrganizationFormMonitors = async (organizationId) => {
 
   return ContactFormMonitor.find({
     organization: organizationId,
+    isArchived: { $ne: true },
   })
     .populate("website", "name url")
     .sort({ createdAt: -1 });
@@ -142,6 +144,7 @@ export const getContactFormMonitor = async (monitorId, organizationId) => {
   return ContactFormMonitor.findOne({
     _id: monitorId,
     organization: organizationId,
+    isArchived: { $ne: true },
   }).populate("website", "name url");
 };
 
@@ -157,8 +160,18 @@ export const deleteContactFormMonitor = async (monitorId, organizationId) => {
     throw new Error("Invalid ID.");
   }
 
-  return ContactFormMonitor.findOneAndDelete({
+  return ContactFormMonitor.findOneAndUpdate(
+    {
     _id: monitorId,
     organization: organizationId,
-  });
+    },
+    {
+      $set: {
+        isArchived: true,
+        archivedAt: new Date(),
+        isMonitoringEnabled: false,
+      },
+    },
+    { returnDocument: "after" },
+  );
 };

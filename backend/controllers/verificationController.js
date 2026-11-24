@@ -1,101 +1,8 @@
 import crypto from "node:crypto";
-import net from "node:net";
-import { lookup } from "node:dns/promises";
 
 import Website from "../models/Website.js";
 import Membership from "../models/Membership.js";
-
-// ==========================================
-// WEBSITE VERIFICATION SECURITY HELPERS
-// ==========================================
-
-// CHECK WHETHER AN IP ADDRESS IS PUBLIC
-const isPublicIP = (ip) => {
-  const version = net.isIP(ip);
-
-  if (version === 4) {
-    const [a, b] = ip.split(".").map(Number);
-
-    return !(
-      a === 0 ||
-      a === 10 ||
-      a === 127 ||
-      a >= 224 ||
-      (a === 169 && b === 254) ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      (a === 100 && b >= 64 && b <= 127) ||
-      (a === 198 && (b === 18 || b === 19))
-    );
-  }
-
-  if (version === 6) {
-    return /^[23]/i.test(ip);
-  }
-
-  return false;
-};
-
-// VALIDATE WEBSITE URL BEFORE REQUESTING IT
-const validatePublicWebsite = async (websiteUrl) => {
-  const url = new URL(websiteUrl);
-
-  if (!["http:", "https:"].includes(url.protocol)) {
-    throw new Error("Only HTTP and HTTPS websites are allowed.");
-  }
-
-  if (url.username || url.password) {
-    throw new Error("Website URLs cannot contain credentials.");
-  }
-
-  const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, "");
-
-  // DEVELOPMENT-ONLY LOCAL WEBSITE SUPPORT
-  const isDevelopment = process.env.NODE_ENV === "development";
-
-  const isLocalhost =
-    hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
-
-  if (isLocalhost) {
-    if (!isDevelopment) {
-      throw new Error("Local websites are not allowed.");
-    }
-
-    // Only allow the Vite development server
-    if (url.port !== "5173") {
-      throw new Error(
-        "Development verification only allows localhost port 5173.",
-      );
-    }
-
-    return url;
-  }
-
-  // BLOCK PRIVATE AND LOCAL HOSTNAMES
-  if (
-    !hostname ||
-    hostname.endsWith(".localhost") ||
-    hostname.endsWith(".local") ||
-    net.isIP(hostname)
-  ) {
-    throw new Error("This website address is not allowed.");
-  }
-
-  // CHECK DNS RESOLUTION
-  const addresses = await lookup(hostname, {
-    all: true,
-    verbatim: true,
-  });
-
-  if (
-    addresses.length === 0 ||
-    addresses.some(({ address }) => !isPublicIP(address))
-  ) {
-    throw new Error("This website does not resolve to a public IP address.");
-  }
-
-  return url;
-};
+import { secureWebsiteRequest } from "../utils/websiteSecurity.js";
 
 // ==========================================
 // FETCH WEBSITE HTML
@@ -103,81 +10,79 @@ const validatePublicWebsite = async (websiteUrl) => {
 
 const fetchWebsiteHTML = async (websiteUrl) => {
   let currentUrl = websiteUrl;
+  const controller = new AbortController();
+  const deadline = Date.now() + 15000;
+  const timeout = setTimeout(
+    () => controller.abort(new Error("Website verification timed out.")),
+    deadline - Date.now(),
+  );
 
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const url = await validatePublicWebsite(currentUrl);
-
-    const response = await fetch(url, {
-      method: "GET",
-      redirect: "manual",
-      signal: AbortSignal.timeout(10000),
-      headers: {
-        "User-Agent": "LeadLeak-Website-Verification/1.0",
-        Accept: "text/html",
-      },
-    });
-
-    // HANDLE REDIRECTS
-    if ([301, 302, 303, 307, 308].includes(response.status)) {
-      const location = response.headers.get("location");
-
-      await response.body?.cancel();
-
-      if (!location || attempt === 3) {
-        throw new Error("Too many website redirects.");
+  try {
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const remainingTime = deadline - Date.now();
+      if (remainingTime <= 0) {
+        throw new Error("Website verification timed out.");
       }
 
-      currentUrl = new URL(location, url).toString();
-      continue;
-    }
+      const response = await secureWebsiteRequest({
+        url: currentUrl,
+        method: "GET",
+        timeoutMs: remainingTime,
+        maxBytes: 1024 * 1024,
+        signal: controller.signal,
+        headers: {
+          "User-Agent": "LeadLeak-Website-Verification/1.0",
+          Accept: "text/html",
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Website returned HTTP status ${response.status}.`);
-    }
+      if ([301, 302, 303, 307, 308].includes(response.status)) {
+        const location = response.headers.get("location");
+        response.destroy();
 
-    const contentType = response.headers.get("content-type") || "";
+        if (!location || attempt === 3) {
+          throw new Error("Too many website redirects.");
+        }
 
-    if (!contentType.toLowerCase().includes("text/html")) {
-      throw new Error("The website did not return an HTML page.");
-    }
-
-    const contentLength = Number(response.headers.get("content-length") || 0);
-
-    if (contentLength > 1024 * 1024) {
-      throw new Error("Website HTML is too large to verify.");
-    }
-
-    if (!response.body) {
-      throw new Error("Website returned an empty response.");
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    let html = "";
-    let totalBytes = 0;
-
-    while (true) {
-      const { done, value } = await reader.read();
-
-      if (done) break;
-
-      totalBytes += value.length;
-
-      if (totalBytes > 1024 * 1024) {
-        await reader.cancel();
-        throw new Error("Website HTML is too large to verify.");
+        currentUrl = new URL(location, new URL(currentUrl)).toString();
+        continue;
       }
 
-      html += decoder.decode(value, { stream: true });
+      try {
+        if (!response.ok) {
+          throw new Error(`Website returned HTTP status ${response.status}.`);
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.toLowerCase().includes("text/html")) {
+          throw new Error("The website did not return an HTML page.");
+        }
+
+        const contentLength = Number(
+          response.headers.get("content-length") || 0,
+        );
+        if (
+          !Number.isFinite(contentLength) ||
+          contentLength > 1024 * 1024 ||
+          response.body.length > 1024 * 1024
+        ) {
+          throw new Error("Website HTML is too large or has an invalid size.");
+        }
+
+        const html = await response.text();
+        if (!html.trim()) {
+          throw new Error("Website returned an empty HTML response.");
+        }
+        return html;
+      } finally {
+        response.destroy();
+      }
     }
 
-    html += decoder.decode();
-
-    return html;
+    throw new Error("Unable to reach the website.");
+  } finally {
+    clearTimeout(timeout);
   }
-
-  throw new Error("Unable to reach the website.");
 };
 
 // ==========================================
@@ -185,18 +90,27 @@ const fetchWebsiteHTML = async (websiteUrl) => {
 // ==========================================
 
 const getVerificationMetaToken = (html) => {
-  const metaTags = html.match(/<meta\b[^>]*>/gi) || [];
+  const metaTags =
+    html.match(/<meta\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi) || [];
 
   for (const tag of metaTags) {
-    const nameMatch = tag.match(/\bname\s*=\s*["']([^"']+)["']/i);
+    const attributes = new Map();
+    const attributePattern =
+      /([^\s=/>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g;
+    let match;
 
-    const contentMatch = tag.match(/\bcontent\s*=\s*["']([^"']+)["']/i);
+    while ((match = attributePattern.exec(tag))) {
+      attributes.set(
+        match[1].toLowerCase(),
+        match[2] ?? match[3] ?? match[4],
+      );
+    }
 
     if (
-      nameMatch?.[1]?.toLowerCase() === "leadleak-verification" &&
-      contentMatch
+      attributes.get("name")?.toLowerCase() === "leadleak-verification" &&
+      attributes.has("content")
     ) {
-      return contentMatch[1];
+      return attributes.get("content");
     }
   }
 
@@ -245,6 +159,13 @@ export const startWebsiteVerification = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Website not found.",
+      });
+    }
+
+    if (website.isArchived) {
+      return res.status(404).json({
+        success: false,
+        message: "Archived websites cannot be verified.",
       });
     }
 
@@ -313,6 +234,13 @@ export const verifyWebsite = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Website not found.",
+      });
+    }
+
+    if (website.isArchived) {
+      return res.status(404).json({
+        success: false,
+        message: "Archived websites cannot be verified.",
       });
     }
 

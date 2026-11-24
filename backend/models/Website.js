@@ -91,6 +91,34 @@ const websiteSchema = new mongoose.Schema(
       enum: ["up", "down", "unknown"],
       default: "unknown",
     },
+
+    isArchived: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    archivedAt: {
+      type: Date,
+      default: null,
+    },
+
+    archivedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    monitoringUrl: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    monitoringUrlChangedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -99,6 +127,7 @@ const websiteSchema = new mongoose.Schema(
 
 // Prevent duplicate website entries in the same organization
 websiteSchema.index({ organization: 1, url: 1 }, { unique: true });
+websiteSchema.index({ organization: 1, isArchived: 1, isMonitoringEnabled: 1 });
 
 const Website = mongoose.model("Website", websiteSchema);
 

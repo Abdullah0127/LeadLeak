@@ -1,7 +1,7 @@
 import Website from "../models/Website.js";
 import MonitoringCheck from "../models/MonitoringCheck.js";
 
-import { validatePublicWebsite } from "../utils/websiteSecurity.js";
+import { secureWebsiteRequest } from "../utils/websiteSecurity.js";
 import { checkSSLCertificate } from "./sslMonitoringService.js";
 
 import {
@@ -14,7 +14,7 @@ import {
 // WEBSITE MONITORING SERVICE
 // ==========================================
 
-const CHECK_TIMEOUT = 15000;
+const CHECK_TIMEOUT = 20000;
 const MAX_REDIRECTS = 5;
 const SSL_EXPIRY_WARNING_DAYS = 30;
 const FAILURE_CONFIRMATION_COUNT = Math.max(
@@ -33,12 +33,12 @@ const fetchWebsite = async (websiteUrl, signal) => {
   let currentUrl = websiteUrl;
 
   for (let attempt = 0; attempt <= MAX_REDIRECTS; attempt++) {
-    const validatedUrl = await validatePublicWebsite(currentUrl);
-
-    const response = await fetch(validatedUrl, {
+    const response = await secureWebsiteRequest({
+      url: currentUrl,
       method: "GET",
-      redirect: "manual",
       signal,
+      timeoutMs: CHECK_TIMEOUT,
+      maxBytes: 1024 * 1024,
       headers: {
         "User-Agent": "LeadLeak-Monitor/1.0",
       },
@@ -47,7 +47,7 @@ const fetchWebsite = async (websiteUrl, signal) => {
     if (REDIRECT_STATUSES.includes(response.status)) {
       const location = response.headers.get("location");
 
-      await response.body?.cancel().catch(() => {});
+      response.destroy();
 
       if (!location) {
         throw new Error("Website returned a redirect without a destination.");
@@ -57,7 +57,8 @@ const fetchWebsite = async (websiteUrl, signal) => {
         throw new Error("Website exceeded the maximum redirect limit.");
       }
 
-      currentUrl = new URL(location, validatedUrl).toString();
+      const baseUrl = new URL(currentUrl);
+      currentUrl = new URL(location, baseUrl).toString();
 
       continue;
     }
@@ -73,6 +74,17 @@ const fetchWebsite = async (websiteUrl, signal) => {
 // ==========================================
 
 export const checkWebsite = async (website) => {
+  if (website.isArchived) {
+    return {
+      success: false,
+      skipped: true,
+      websiteId: website._id,
+      websiteUrl: website.url,
+      status: "unknown",
+      checkedAt: new Date(),
+    };
+  }
+
   const websiteKey = String(website._id);
 
   if (activeWebsiteChecks.has(websiteKey)) {
@@ -88,6 +100,8 @@ export const checkWebsite = async (website) => {
 
   activeWebsiteChecks.add(websiteKey);
 
+  let checkTimeout;
+
   try {
   const startTime = Date.now();
 
@@ -95,6 +109,9 @@ export const checkWebsite = async (website) => {
   const previousCheck = await MonitoringCheck.findOne({
     website: website._id,
     organization: website.organization,
+    ...(website.monitoringUrlChangedAt
+      ? { checkedAt: { $gte: website.monitoringUrlChangedAt } }
+      : {}),
   }).sort({ checkedAt: -1 });
 
   let observedStatus = "down";
@@ -108,8 +125,8 @@ export const checkWebsite = async (website) => {
 
   const controller = new AbortController();
 
-  const timeout = setTimeout(() => {
-    controller.abort();
+  checkTimeout = setTimeout(() => {
+    controller.abort(new Error("Website check timed out."));
   }, CHECK_TIMEOUT);
 
   // ==========================================
@@ -122,13 +139,14 @@ export const checkWebsite = async (website) => {
     responseTime = Date.now() - startTime;
     httpStatusCode = response.status;
 
-    observedStatus = response.status < 500 ? "up" : "down";
+    observedStatus =
+      response.status >= 200 && response.status < 400 ? "up" : "down";
 
     if (observedStatus === "down") {
       errorMessage = `Server returned HTTP ${response.status}.`;
     }
 
-    await response.body?.cancel().catch(() => {});
+    response.destroy();
   } catch (error) {
     responseTime = Date.now() - startTime;
 
@@ -137,8 +155,6 @@ export const checkWebsite = async (website) => {
     } else {
       errorMessage = error.message || "Website could not be reached.";
     }
-  } finally {
-    clearTimeout(timeout);
   }
 
   // ==========================================
@@ -146,7 +162,11 @@ export const checkWebsite = async (website) => {
   // ==========================================
 
   try {
-    const sslResult = await checkSSLCertificate(website.url);
+    const remainingTime = Math.max(1, CHECK_TIMEOUT - (Date.now() - startTime));
+    const sslResult = await checkSSLCertificate(website.url, {
+      signal: controller.signal,
+      timeoutMs: remainingTime,
+    });
 
     sslStatus = sslResult.sslStatus;
     sslExpiresAt = sslResult.sslExpiresAt || null;
@@ -157,6 +177,8 @@ export const checkWebsite = async (website) => {
 
     console.error("SSL Monitoring Error:", error.message);
   }
+
+  clearTimeout(checkTimeout);
 
   const previousConfirmedStatus =
     website.confirmedStatus ||
@@ -189,6 +211,7 @@ export const checkWebsite = async (website) => {
   const monitoringCheck = await MonitoringCheck.create({
     website: website._id,
     organization: website.organization,
+    monitoredUrl: website.monitoringUrl || website.url,
     status,
     httpStatusCode,
     responseTime,
@@ -281,6 +304,7 @@ export const checkWebsite = async (website) => {
     console.error(`Website monitoring check failed for ${website.url}:`, error.message);
     throw error;
   } finally {
+    clearTimeout(checkTimeout);
     activeWebsiteChecks.delete(websiteKey);
   }
 };

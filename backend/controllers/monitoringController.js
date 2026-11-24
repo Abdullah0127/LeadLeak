@@ -29,6 +29,13 @@ export const runWebsiteCheck = async (req, res) => {
       });
     }
 
+    if (website.isArchived) {
+      return res.status(404).json({
+        success: false,
+        message: "Archived websites cannot be checked.",
+      });
+    }
+
     if (website.verificationStatus !== "verified") {
       return res.status(400).json({
         success: false,
@@ -112,21 +119,24 @@ export const getWebsiteMonitoringHistory = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
+    const historyFilter = {
+      website: website._id,
+      organization: website.organization,
+    };
+
+    if (website.monitoringUrlChangedAt) {
+      historyFilter.checkedAt = { $gte: website.monitoringUrlChangedAt };
+    }
+
     // Retrieve monitoring history
     const [checks, total] = await Promise.all([
-      MonitoringCheck.find({
-        website: website._id,
-        organization: website.organization,
-      })
+      MonitoringCheck.find(historyFilter)
         .sort({ checkedAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
 
-      MonitoringCheck.countDocuments({
-        website: website._id,
-        organization: website.organization,
-      }),
+      MonitoringCheck.countDocuments(historyFilter),
     ]);
 
     return res.status(200).json({
