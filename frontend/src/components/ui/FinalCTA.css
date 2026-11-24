@@ -1,0 +1,475 @@
+/* FINAL CTA - MAIN SECTION */
+
+.final-cta-section {
+  position: relative;
+  overflow: hidden;
+  padding: 100px 24px;
+  background: #183d32;
+  color: #ffffff;
+}
+
+.final-cta-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 65px;
+  width: 100%;
+  max-width: 1152px;
+  margin: 0 auto;
+}
+
+/* FINAL CTA - LEFT CONTENT */
+
+.final-cta-content {
+  position: relative;
+  z-index: 2;
+  max-width: 620px;
+}
+
+.final-cta-eyebrow {
+  display: inline-block;
+  margin-bottom: 22px;
+  padding: 8px 14px;
+  border: 1px solid rgba(216, 233, 221, 0.25);
+  border-radius: 999px;
+  background: rgba(216, 233, 221, 0.09);
+  color: #d8e9dd;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.final-cta-content h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(38px, 4.5vw, 57px);
+  font-weight: 700;
+  letter-spacing: -2.5px;
+  line-height: 1.13;
+}
+
+.final-cta-content h2 span {
+  color: #a9d1b5;
+}
+
+.final-cta-content > p {
+  max-width: 510px;
+  margin: 22px 0 30px;
+  color: #d0ded5;
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+/* FINAL CTA - ACTION BUTTONS */
+
+.final-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.final-cta-primary,
+.final-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 49px;
+  padding: 13px 21px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.final-cta-primary {
+  background: #ffffff;
+  color: #183d32;
+}
+
+.final-cta-primary:hover {
+  background: #d8e9dd;
+  transform: translateY(-2px);
+}
+
+.final-cta-primary span {
+  font-size: 17px;
+  transition: transform 0.2s ease;
+}
+
+.final-cta-primary:hover span {
+  transform: translate(3px, -3px);
+}
+
+.final-cta-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #ffffff;
+}
+
+.final-cta-secondary:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* FINAL CTA - TRUST NOTE */
+
+.final-cta-note {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 25px;
+  color: #c2d4c8;
+  font-size: 12px;
+}
+
+.final-cta-check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(169, 209, 181, 0.17);
+  color: #a9d1b5;
+  font-size: 11px;
+}
+
+/* FINAL CTA - RIGHT IMAGE VISUAL */
+
+.final-cta-visual {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+}
+
+.final-cta-image-wrapper {
+  position: relative;
+  min-height: 390px;
+  overflow: visible;
+  border: 1px solid rgba(216, 233, 221, 0.2);
+  border-radius: 18px;
+  background: #245b46;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.2);
+}
+
+.final-cta-main-image {
+  display: block;
+  width: 100%;
+  height: 390px;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.final-cta-image-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 61, 50, 0.02) 40%,
+    rgba(24, 61, 50, 0.3) 100%
+  );
+  pointer-events: none;
+}
+
+/* FINAL CTA - MONITORING INFORMATION CARD */
+
+.final-cta-monitor-card {
+  position: absolute;
+  top: 24px;
+  left: -28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 260px;
+  padding: 15px 18px;
+  border: 1px solid #e5eae6;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #252b28;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.14);
+}
+
+.monitor-card-indicator {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2f7058;
+  box-shadow: 0 0 0 4px #edf5f0;
+}
+
+.final-cta-monitor-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.final-cta-monitor-card strong {
+  color: #183d32;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.final-cta-monitor-card div span {
+  color: #68736d;
+  font-size: 10px;
+}
+
+/* FINAL CTA - SSL SECURITY CARD */
+
+.final-cta-ssl-card {
+  position: absolute;
+  right: -25px;
+  bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 245px;
+  padding: 12px;
+  border: 1px solid #e5eae6;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #252b28;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
+}
+
+.final-cta-ssl-card img {
+  width: 43px;
+  height: 43px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.ssl-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ssl-card-content strong {
+  color: #183d32;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ssl-card-content span {
+  color: #68736d;
+  font-size: 10px;
+}
+
+.ssl-card-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #edf5f0;
+  color: #2f7058;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* FINAL CTA - UPTIME CARD (REAL SERVER IMAGE) */
+
+.final-cta-uptime-card {
+  position: absolute;
+  bottom: -24px;
+  left: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 235px;
+  padding: 12px;
+  border: 1px solid #e5eae6;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #252b28;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.final-cta-uptime-card img {
+  width: 43px;
+  height: 43px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.uptime-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.uptime-card-content strong {
+  color: #183d32;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.uptime-card-content span {
+  color: #68736d;
+  font-size: 10px;
+}
+
+.uptime-card-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #edf5f0;
+  color: #245b46;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.uptime-card-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2f7058;
+}
+
+/* FINAL CTA - CARD HOVER LIFT */
+
+.final-cta-monitor-card,
+.final-cta-ssl-card,
+.final-cta-uptime-card {
+  transition: transform 0.3s ease;
+}
+
+.final-cta-visual:hover .final-cta-monitor-card {
+  transform: translateY(-4px);
+}
+
+.final-cta-visual:hover .final-cta-ssl-card {
+  transform: translateY(-6px);
+}
+
+.final-cta-visual:hover .final-cta-uptime-card {
+  transform: translateY(4px);
+}
+
+/* FINAL CTA - TABLET RESPONSIVENESS */
+
+@media (max-width: 900px) {
+  .final-cta-container {
+    grid-template-columns: 1fr 0.85fr;
+    gap: 35px;
+  }
+
+  .final-cta-content h2 {
+    font-size: 42px;
+  }
+
+  .final-cta-image-wrapper,
+  .final-cta-main-image {
+    min-height: 330px;
+    height: 330px;
+  }
+
+  .final-cta-monitor-card {
+    left: -15px;
+  }
+
+  .final-cta-ssl-card {
+    right: -12px;
+  }
+}
+
+/* FINAL CTA - MOBILE RESPONSIVENESS */
+
+@media (max-width: 650px) {
+  .final-cta-section {
+    padding: 75px 20px 90px;
+  }
+
+  .final-cta-container {
+    grid-template-columns: 1fr;
+    gap: 55px;
+  }
+
+  .final-cta-content h2 {
+    font-size: clamp(34px, 9vw, 43px);
+    letter-spacing: -1.8px;
+  }
+
+  .final-cta-content > p {
+    font-size: 14px;
+  }
+
+  .final-cta-visual {
+    width: calc(100% - 15px);
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .final-cta-image-wrapper,
+  .final-cta-main-image {
+    min-height: 290px;
+    height: 290px;
+  }
+
+  .final-cta-monitor-card {
+    top: 15px;
+    left: -12px;
+    padding: 12px;
+  }
+
+  .final-cta-ssl-card {
+    right: -12px;
+    bottom: 15px;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 900px) {
+  .final-cta-uptime-card {
+    display: none;
+  }
+}
+
+/* FINAL CTA - SMALL MOBILE RESPONSIVENESS */
+
+@media (max-width: 380px) {
+  .final-cta-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .final-cta-primary,
+  .final-cta-secondary {
+    width: 100%;
+  }
+
+  .final-cta-monitor-card {
+    max-width: 225px;
+  }
+
+  .final-cta-ssl-card {
+    min-width: 205px;
+  }
+}
+
+/* FINAL CTA - REDUCED MOTION ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+  .final-cta-primary,
+  .final-cta-primary span,
+  .final-cta-secondary {
+    transition: none;
+  }
+}

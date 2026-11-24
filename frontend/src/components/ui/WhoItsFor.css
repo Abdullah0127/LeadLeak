@@ -1,0 +1,344 @@
+/* Who It's For - Main Section */
+
+.who-its-for-section {
+  padding: 105px 24px;
+  background: #ffffff;
+}
+
+.who-its-for-container {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* Who It's For - Heading */
+
+.who-its-for-heading {
+  max-width: 720px;
+  margin: 0 auto 55px;
+  text-align: center;
+}
+
+.who-its-for-eyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #2f7058;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.who-its-for-heading h2 {
+  margin: 0;
+  color: #252b28;
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -2px;
+}
+
+.who-its-for-heading h2 span {
+  color: #2f7058;
+}
+
+.who-its-for-heading p {
+  max-width: 570px;
+  margin: 20px auto 0;
+  color: #68736d;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* Who It's For - Cards Grid */
+
+.who-its-for-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+/* Who It's For - Individual Card */
+
+.audience-card {
+  display: flex;
+  min-height: 410px;
+  flex-direction: column;
+  padding: 30px;
+  border: 1px solid #e5eae6;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(37, 43, 40, 0.04);
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.audience-card:hover {
+  transform: translateY(-7px);
+  border-color: #b7d3c0;
+  box-shadow: 0 18px 35px rgba(37, 43, 40, 0.08);
+}
+
+/* Who It's For - Card Header */
+
+.audience-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.audience-icon {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #edf5f0;
+  color: #2f7058;
+}
+
+.audience-icon svg {
+  width: 25px;
+  height: 25px;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.audience-number {
+  color: #a0b5a7;
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-style: italic;
+}
+
+/* Who It's For - Card Text */
+
+.audience-card h3 {
+  margin: 0 0 13px;
+  color: #183d32;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.audience-description {
+  margin: 0;
+  color: #68736d;
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+/* Who It's For - Benefits */
+
+.audience-divider {
+  height: 1px;
+  margin: 24px 0 20px;
+  background: #e5eae6;
+}
+
+.audience-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audience-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #536c5b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.audience-check {
+  display: flex;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #edf5f0;
+  color: #2f7058;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Who It's For - Tablet Layout */
+
+@media (max-width: 900px) {
+  .who-its-for-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .audience-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Who It's For - Mobile Layout */
+
+@media (max-width: 600px) {
+  .who-its-for-section {
+    padding: 75px 18px;
+  }
+
+  .who-its-for-heading {
+    margin-bottom: 38px;
+  }
+
+  .who-its-for-heading h2 {
+    font-size: 36px;
+    letter-spacing: -1.5px;
+  }
+
+  .who-its-for-heading p {
+    font-size: 14px;
+  }
+
+  .who-its-for-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .audience-card {
+    min-height: auto;
+    padding: 25px;
+  }
+
+  .audience-card:last-child {
+    grid-column: auto;
+  }
+}
+
+/* Who It's For - Image Header Card Design */
+
+.audience-card {
+  min-height: 0;
+  padding: 0;
+}
+
+.audience-card-media {
+  position: relative;
+  height: 170px;
+  background: #183d32;
+  border-radius: 17px 17px 0 0;
+}
+
+.audience-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 17px 17px 0 0;
+  object-fit: cover;
+  object-position: center 40%;
+  transition: transform 0.6s ease;
+}
+
+.audience-card-media::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 17px 17px 0 0;
+  background: linear-gradient(
+    180deg,
+    rgba(7, 20, 15, 0.1) 0%,
+    rgba(7, 20, 15, 0.55) 100%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.audience-card:hover .audience-card-media img {
+  transform: scale(1.05);
+}
+
+/* keeps the zoomed image inside the rounded corners */
+.audience-card-media {
+  overflow: hidden;
+}
+
+.audience-card-tag {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(8px);
+}
+
+.audience-card-media .audience-number {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 32px;
+}
+
+.audience-card-media .audience-icon {
+  position: absolute;
+  bottom: 16px;
+  left: 18px;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 20px rgba(7, 20, 15, 0.25);
+  backdrop-filter: blur(8px);
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.audience-card:hover .audience-icon {
+  transform: translateY(-3px) rotate(-4deg);
+  background: #2f7058;
+  color: #ffffff;
+}
+
+.audience-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 28px 30px 30px;
+}
+
+@media (max-width: 600px) {
+  .audience-card {
+    padding: 0;
+  }
+
+  .audience-card-media {
+    height: 150px;
+  }
+
+  .audience-card-body {
+    padding: 24px 25px 25px;
+  }
+}
+
+/* Who It's For - Reduced Motion Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .audience-card {
+    transition: none;
+  }
+}
