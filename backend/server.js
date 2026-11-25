@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { pathToFileURL } from "node:url";
 import { rateLimit } from "express-rate-limit";
 import net from "node:net";
 import connectDB from "./config/db.js";
@@ -202,11 +203,20 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-connectDB().then(() => {
-  // Start automatic website monitoring after database connection.
+export { app };
+
+export const startServer = async () => {
+  await connectDB();
   startMonitoringScheduler();
 
-  app.listen(PORT, () => {
+  return app.listen(PORT, () => {
     console.log(`LeadLeak server running on http://localhost:${PORT}`);
   });
-});
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  startServer().catch((error) => {
+    console.error("Server startup failed:", error.message);
+    process.exitCode = 1;
+  });
+}

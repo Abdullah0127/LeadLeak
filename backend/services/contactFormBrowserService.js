@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { validatePublicWebsite } from "../utils/websiteSecurity.js";
 
 // ==========================================
 // CONTACT FORM BROWSER SERVICE
@@ -12,11 +13,42 @@ export const inspectContactFormPage = async (formUrl) => {
   let browser;
 
   try {
+    const parsedUrl = new URL(formUrl);
+    const isAllowedLocalTest =
+      (parsedUrl.hostname === "127.0.0.1" ||
+        parsedUrl.hostname === "localhost") &&
+      parsedUrl.port === "4179";
+
+    if (!isAllowedLocalTest) {
+      await validatePublicWebsite(formUrl);
+    }
+
     browser = await chromium.launch({
       headless: true,
     });
 
-    const page = await browser.newPage();
+    const context = await browser.newContext();
+    await context.route("http://*/*", async (route) => {
+      if (isAllowedLocalTest) {
+        await route.continue();
+        return;
+      }
+      try {
+        await validatePublicWebsite(route.request().url());
+        await route.continue();
+      } catch {
+        await route.abort("blockedbyclient");
+      }
+    });
+    await context.route("https://*/*", async (route) => {
+      try {
+        await validatePublicWebsite(route.request().url());
+        await route.continue();
+      } catch {
+        await route.abort("blockedbyclient");
+      }
+    });
+    const page = await context.newPage();
 
     page.setDefaultTimeout(10000);
 
@@ -97,7 +129,22 @@ export const testLocalContactForm = async (formUrl) => {
       headless: true,
     });
 
-    const page = await browser.newPage();
+    const context = await browser.newContext();
+    await context.route("**/*", async (route) => {
+      const parsed = new URL(route.request().url());
+      const isAllowedRequest =
+        (parsed.hostname === "127.0.0.1" ||
+          parsed.hostname === "localhost") &&
+        parsed.port === "4179";
+
+      if (isAllowedRequest) {
+        await route.continue();
+      } else {
+        await route.abort("blockedbyclient");
+      }
+    });
+
+    const page = await context.newPage();
 
     page.setDefaultTimeout(10000);
 

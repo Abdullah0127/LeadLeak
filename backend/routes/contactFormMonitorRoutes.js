@@ -32,6 +32,13 @@ router.get(
   getOrganizationFormMonitorsController,
 );
 
+// Compatibility route for clients that omit "/organization".
+router.get(
+  "/:organizationId",
+  protect,
+  getOrganizationFormMonitorsController,
+);
+
 // ==========================================
 // GET SINGLE FORM MONITOR
 // ==========================================
