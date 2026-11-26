@@ -1,218 +1,94 @@
-/* How It Works - Main Section */
+/* HOW IT WORKS - LIGHT SECTION WITH STAGGERED CARDS */
 
-.how-it-works-section {
+.how-section {
   position: relative;
   overflow: hidden;
-  padding: 110px 24px 90px;
-  background: #f7f8f5;
+  background: var(--color-cream);
 }
 
-.how-it-works-container {
-  position: relative;
-  z-index: 1;
-  max-width: 1200px;
-  margin: 0 auto;
+/* HEADING (ASYMMETRICAL) */
+
+.how-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: end;
+  gap: 56px;
+  margin-bottom: 72px;
 }
 
-/* How It Works - Heading */
-
-.how-it-works-heading {
-  max-width: 760px;
-  margin: 0 auto 65px;
-  text-align: center;
+.how-head-title {
+  margin-top: 22px;
 }
 
-.how-it-works-eyebrow {
-  display: inline-block;
-  margin-bottom: 20px;
-  color: #2f7058;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
+.how-head-copy {
+  max-width: 420px;
+  padding-bottom: 8px;
 }
 
-.how-it-works-heading h2 {
+/* STAGGERED STEP GRID */
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 22px;
   margin: 0;
-  color: #252b28;
-  font-size: clamp(36px, 5vw, 54px);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -2px;
+  padding: 0;
+  list-style: none;
 }
 
-.how-it-works-heading h2 span {
-  color: #2f7058;
+.how-step {
+  min-width: 0;
 }
 
-.how-it-works-heading p {
-  max-width: 570px;
-  margin: 20px auto 0;
-  color: #68736d;
-  font-size: 15px;
-  line-height: 1.8;
+.how-step-2 {
+  margin-top: 52px;
 }
 
-/* How It Works - Card Canvas */
-
-.how-steps-canvas {
-  position: relative;
-  width: 100%;
-  max-width: 1000px;
-  height: 850px;
-  margin: 0 auto;
+.how-step-3 {
+  margin-top: 104px;
 }
 
-/* How It Works - Connecting Path */
-
-.how-steps-connector {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
+.how-step-4 {
+  margin-top: 156px;
 }
 
-/* How It Works - Card Positioning */
+/* STEP CARD */
 
-.how-card-position {
-  position: absolute;
-  z-index: 1;
-  width: 280px;
-}
-
-.how-step-one {
-  top: 0;
-  left: 10%;
-}
-
-.how-step-two {
-  top: 145px;
-  right: 8%;
-}
-
-.how-step-three {
-  top: 380px;
-  left: 10%;
-}
-
-.how-step-four {
-  top: 570px;
-  right: 4%;
-}
-
-/* How It Works - Pinned Card Design */
-
-.how-card-outer {
-  position: relative;
-  padding: 12px;
-  border: 1px solid #e5eae6;
-  border-radius: 22px;
-  background: #ffffff;
-  box-shadow: 0 12px 30px rgba(37, 43, 40, 0.09);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.how-card-outer:hover {
-  z-index: 5;
-  transform: rotate(0deg) translateY(-7px) scale(1.03);
-  box-shadow: 0 20px 40px rgba(37, 43, 40, 0.13);
-}
-
-.how-card-rotate-left {
-  transform: rotate(4deg);
-}
-
-.how-card-rotate-right {
-  transform: rotate(-4deg);
-}
-
-/* How It Works - Pin Icon */
-
-.how-card-pin {
-  display: block;
-  width: 32px;
-  height: 32px;
-  margin: 0 auto 12px;
-  color: #2f7058;
-}
-
-/* How It Works - Card Inner Content */
-
-.how-card-inner {
+.how-card {
   display: flex;
-  min-height: 205px;
   flex-direction: column;
-  padding: 19px;
-  border: 1px solid #d8e9dd;
-  border-radius: 15px;
-  background: #edf5f0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--color-sage) 48%, #ffffff);
+  transition:
+    transform var(--duration-base) var(--ease-soft),
+    box-shadow var(--duration-base) var(--ease-soft);
 }
 
-.how-card-number {
-  display: inline-block;
-  margin-bottom: 20px;
-  color: #2f7058;
-  font-family: Georgia, serif;
-  font-size: 35px;
-  font-style: italic;
-  font-weight: 700;
+.how-step-2 .how-card {
+  background: color-mix(in srgb, var(--color-lime) 60%, #ffffff);
 }
 
-.how-card-inner h3 {
-  margin: 0 0 11px;
-  color: #183d32;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.25;
+.how-step-4 .how-card {
+  background: var(--color-forest-900);
+  color: #ffffff;
 }
 
-.how-card-inner p {
-  margin: 0 0 18px;
-  color: #536c5b;
-  font-size: 12px;
-  line-height: 1.8;
+.how-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lift);
 }
 
-.how-card-label {
-  display: inline-block;
-  width: fit-content;
-  margin-top: auto;
-  padding: 6px 10px;
-  border-radius: 20px;
-  background: #d8e9dd;
-  color: #245b46;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-/* How It Works - Card Header (number + real photo) */
-
-.how-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.how-card-header .how-card-number {
-  margin-bottom: 0;
-}
+/* ARCH-TOPPED PHOTO */
 
 .how-card-photo {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
+  position: relative;
+  margin: 12px 12px 0;
+  aspect-ratio: 5 / 4;
   overflow: hidden;
-  border: 3px solid #ffffff;
-  border-radius: 16px;
-  background: #183d32;
-  box-shadow: 0 8px 18px rgba(24, 61, 50, 0.2);
-  transform: rotate(5deg);
-  transition: transform 0.35s ease;
+  border-radius: 999px 999px 1.25rem 1.25rem;
+  background: var(--color-forest-800);
 }
 
 .how-card-photo img {
@@ -220,142 +96,191 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 40%;
+  transition: transform 0.8s var(--ease-soft);
 }
 
-.how-card-outer:hover .how-card-photo {
-  transform: rotate(-3deg) scale(1.08);
+.how-card:hover .how-card-photo img {
+  transform: scale(1.06);
 }
 
-/* How It Works - Card Inner Polish */
+.how-card-number {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  display: inline-flex;
+  min-width: 56px;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  color: var(--color-forest-900);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateX(-50%);
+}
 
-.how-card-inner {
-  position: relative;
-  background: linear-gradient(160deg, #edf5f0 0%, #f8fcf9 100%);
+/* CARD BODY */
+
+.how-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px 24px 26px;
+}
+
+.how-card-body h3 {
+  margin: 0 0 12px;
+  color: var(--color-forest-900);
+  font-size: clamp(26px, 2.2vw, 31px);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.how-card-body p {
+  margin: 0 0 22px;
+  color: var(--color-ink-soft);
+  font-size: 14px;
+  line-height: 1.75;
 }
 
 .how-card-label {
   display: inline-flex;
+  width: fit-content;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  margin-top: auto;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(21, 61, 46, 0.1);
+  color: var(--color-forest-900);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .how-card-label::before {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #2f7058;
+  background: var(--color-forest-800);
   content: "";
 }
 
-/* How It Works - Bottom Message */
+/* FINAL (DARK) CARD TEXT */
 
-.how-it-works-bottom {
-  max-width: 750px;
-  margin: 20px auto 0;
-  padding: 23px;
-  border: 1px solid #d8e9dd;
-  border-radius: 12px;
-  background: #edf5f0;
+.how-step-4 .how-card-body h3 {
+  color: #ffffff;
+}
+
+.how-step-4 .how-card-body p {
+  color: rgba(246, 246, 240, 0.8);
+}
+
+.how-step-4 .how-card-label {
+  background: rgba(201, 227, 161, 0.16);
+  color: var(--color-sage);
+}
+
+.how-step-4 .how-card-label::before {
+  background: var(--color-sage);
+}
+
+/* BOTTOM MESSAGE */
+
+.how-bottom {
+  max-width: 760px;
+  margin: 56px auto 0;
+  padding: 26px 32px;
+  border: 1px solid rgba(21, 61, 46, 0.14);
+  border-radius: var(--radius-pill);
   text-align: center;
 }
 
-.how-it-works-bottom p {
+.how-bottom p {
   margin: 0;
-  color: #536c5b;
-  font-size: 15px;
-  line-height: 1.7;
+  color: var(--color-ink-soft);
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.4;
 }
 
-.how-it-works-bottom strong {
-  color: #245b46;
+.how-bottom strong {
+  color: var(--color-forest-900);
+  font-weight: 700;
 }
 
-/* How It Works - Tablet Layout */
+/* TABLET: TWO COLUMNS, GENTLER STAGGER */
 
-@media (max-width: 900px) {
-  .how-steps-canvas {
-    max-width: 680px;
-    height: 850px;
+@media (max-width: 960px) {
+  .how-head {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin-bottom: 52px;
   }
 
-  .how-step-one,
-  .how-step-three {
-    left: 2%;
+  .how-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
   }
 
-  .how-step-two,
-  .how-step-four {
-    right: 2%;
-  }
-}
-
-/* How It Works - Mobile Layout */
-
-@media (max-width: 650px) {
-  .how-it-works-section {
-    padding: 75px 18px;
+  .how-step-2,
+  .how-step-4 {
+    margin-top: 48px;
   }
 
-  .how-it-works-heading {
-    margin-bottom: 45px;
-  }
-
-  .how-it-works-heading h2 {
-    font-size: 36px;
-    letter-spacing: -1.5px;
-  }
-
-  .how-it-works-heading p {
-    font-size: 14px;
-  }
-
-  .how-steps-canvas {
-    display: flex;
-    height: auto;
-    flex-direction: column;
-    align-items: center;
-    gap: 28px;
-  }
-
-  .how-steps-connector {
-    display: none;
-  }
-
-  .how-card-position {
-    position: relative;
-    top: auto;
-    right: auto;
-    left: auto;
-    width: 100%;
-    max-width: 340px;
-  }
-
-  .how-card-rotate-left {
-    transform: rotate(1.5deg);
-  }
-
-  .how-card-rotate-right {
-    transform: rotate(-1.5deg);
-  }
-
-  .how-card-inner {
-    min-height: 190px;
-  }
-
-  .how-it-works-bottom {
-    margin-top: 45px;
-    padding: 20px;
-  }
-
-  .how-it-works-bottom p {
-    font-size: 13px;
+  .how-step-3 {
+    margin-top: 0;
   }
 }
 
-/* How It Works - Reduced Motion Accessibility */
+/* MOBILE: SINGLE COLUMN WITH ALTERNATING INDENT */
+
+@media (max-width: 600px) {
+  .how-steps {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .how-step-2,
+  .how-step-3,
+  .how-step-4 {
+    margin-top: 0;
+  }
+
+  .how-step-2 {
+    margin-left: 22px;
+  }
+
+  .how-step-3 {
+    margin-right: 22px;
+  }
+
+  .how-step-4 {
+    margin-left: 22px;
+  }
+
+  .how-bottom {
+    margin-top: 44px;
+    padding: 22px 24px;
+    border-radius: 1.75rem;
+  }
+}
+
+/* REDUCED MOTION */
 
 @media (prefers-reduced-motion: reduce) {
-  .how-card-outer {
+  .how-card,
+  .how-card-photo img {
     transition: none;
+  }
+
+  .how-card:hover,
+  .how-card:hover .how-card-photo img {
+    transform: none;
   }
 }

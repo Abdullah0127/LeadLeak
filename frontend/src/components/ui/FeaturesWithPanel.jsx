@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import "./FeaturesWithPanel.css";
 
 // FEATURES - REAL PREVIEW IMAGES
@@ -228,100 +227,119 @@ function FeaturePreview({ type }) {
 
 function FeaturesWithPanel() {
   const [active, setActive] = useState(0);
+  const tabRefs = useRef([]);
+  const reduceMotion = useReducedMotion();
+
+  const current = features[active];
+
+  // KEYBOARD NAVIGATION FOR THE TAB RAIL (ARROWS, HOME, END)
+  const handleTabKeyDown = (event) => {
+    const lastIndex = features.length - 1;
+    let next = null;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = active === lastIndex ? 0 : active + 1;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = active === 0 ? lastIndex : active - 1;
+    } else if (event.key === "Home") {
+      next = 0;
+    } else if (event.key === "End") {
+      next = lastIndex;
+    }
+
+    if (next !== null) {
+      event.preventDefault();
+      setActive(next);
+      tabRefs.current[next]?.focus();
+    }
+  };
 
   return (
-    <section className="features-panel-section" id="features">
-      <div className="features-panel-container">
-        <div className="features-panel-heading">
-          <span className="features-panel-eyebrow">
-            COMPLETE WEBSITE PROTECTION
-          </span>
+    <section className="features-section ll-section" id="features">
+      <div className="ll-container">
+        {/* FEATURES - ASYMMETRICAL HEADING */}
+        <div className="features-head">
+          <div className="features-head-title">
+            <span className="ll-eyebrow ll-eyebrow--light">
+              COMPLETE WEBSITE PROTECTION
+            </span>
 
-          <h2>
-            Everything your website needs.
-            <br />
-            <span>Nothing important missed.</span>
-          </h2>
+            <h2 className="ll-title ll-title--light">
+              Everything your website needs.
+              <br />
+              <span>Nothing important missed.</span>
+            </h2>
+          </div>
 
-          <p>
+          <p className="ll-lead ll-lead--light features-head-copy">
             From website availability to contact form health,
             LeadLeak helps you identify problems before they
             turn into lost opportunities.
           </p>
         </div>
 
-        <div className="features-panel-layout">
-          {/* LEFT SIDE - FEATURE LIST */}
-          <div className="features-list">
-            {features.map((feature, index) => (
-              <div
-                className={`feature-item ${
-                  active === index ? "active" : ""
-                }`}
-                key={feature.number}
-                onClick={() => setActive(index)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setActive(index);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-pressed={active === index}
-              >
-                <div className="feature-item-heading">
-                  <span className="feature-item-number">
-                    {feature.number}
-                  </span>
+        {/* FEATURES - TAB RAIL */}
+        <div
+          className="features-tabs"
+          role="tablist"
+          aria-label="Website protection features"
+          onKeyDown={handleTabKeyDown}
+        >
+          {features.map((feature, index) => (
+            <button
+              key={feature.number}
+              ref={(node) => {
+                tabRefs.current[index] = node;
+              }}
+              type="button"
+              role="tab"
+              id={`feature-tab-${feature.type}`}
+              aria-selected={active === index}
+              aria-controls="feature-stage"
+              tabIndex={active === index ? 0 : -1}
+              className={`features-tab ${active === index ? "is-active" : ""}`}
+              onClick={() => setActive(index)}
+            >
+              <span className="features-tab-number">{feature.number}</span>
+              <span className="features-tab-title">{feature.title}</span>
+              <span className="features-tab-label">{feature.label}</span>
+            </button>
+          ))}
+        </div>
 
-                  <span className="feature-item-title">
-                    {feature.title}
-                  </span>
+        {/* FEATURES - ACTIVE STAGE */}
+        <div
+          className="features-stage"
+          id="feature-stage"
+          role="tabpanel"
+          aria-labelledby={`feature-tab-${current.type}`}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.type}
+              className="features-stage-inner"
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduceMotion ? 0 : -10 }}
+              transition={{ duration: reduceMotion ? 0 : 0.35 }}
+            >
+              <div className="features-stage-copy">
+                <span className="features-stage-number" aria-hidden="true">
+                  {current.number}
+                </span>
 
-                  <span className="feature-item-arrow">
-                    {active === index ? "−" : "+"}
-                  </span>
-                </div>
+                <h3>{current.title}</h3>
 
-                <AnimatePresence initial={false}>
-                  {active === index && (
-                    <motion.div
-                      className="feature-item-description"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <p>{feature.description}</p>
-                      <span>{feature.label}</span>
+                <p>{current.description}</p>
 
-                      {/* PREVIEW ON MOBILE */}
-                      <div className="mobile-feature-preview">
-                        <FeaturePreview type={feature.type} />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <span className="features-stage-label">{current.label}</span>
               </div>
-            ))}
-          </div>
 
-          {/* RIGHT SIDE - LARGE PREVIEW */}
-          <div className="desktop-feature-preview">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="desktop-preview-inner"
-              >
-                <FeaturePreview type={features[active].type} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              <div className="features-stage-preview">
+                <FeaturePreview type={current.type} />
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>

@@ -2,36 +2,6 @@ import { Link } from "react-router-dom";
 import "./Footer.css";
 import logo from "../../assets/leadleak.png";
 
-// FOOTER - REAL IMAGES FOR THE COVERAGE STRIP
-import chrisLiverani from "../../assets/chris-liverani.jpg";
-import markusWinkler from "../../assets/markus-winkler.jpg";
-import nvidiaImage from "../../assets/nvidia.png";
-import sslImage from "../../assets/ssl.jpg";
-
-// FOOTER - WHAT LEADLEAK MONITORS
-const COVERAGE = [
-  {
-    title: "Uptime monitoring",
-    note: "Know when your site goes offline",
-    image: nvidiaImage,
-  },
-  {
-    title: "SSL monitoring",
-    note: "Keep certificates healthy",
-    image: sslImage,
-  },
-  {
-    title: "Response time",
-    note: "Spot slowdowns early",
-    image: chrisLiverani,
-  },
-  {
-    title: "Form monitoring",
-    note: "Protect your incoming leads",
-    image: markusWinkler,
-  },
-];
-
 function Footer() {
   // FOOTER - BACK TO TOP
   const scrollToTop = () => {
@@ -42,24 +12,6 @@ function Footer() {
     <footer className="leadleak-footer">
       {/* FOOTER - NAVIGATION AREA */}
       <div className="footer-container">
-        {/* FOOTER - MONITORING COVERAGE STRIP */}
-        <div className="footer-coverage">
-          {COVERAGE.map((item) => (
-            <Link key={item.title} to="/#features" className="footer-coverage-card">
-              <img src={item.image} alt="" loading="lazy" />
-
-              <span className="footer-coverage-arrow" aria-hidden="true">
-                ↗
-              </span>
-
-              <span className="footer-coverage-text">
-                <strong>{item.title}</strong>
-                <small>{item.note}</small>
-              </span>
-            </Link>
-          ))}
-        </div>
-
         <div className="footer-top">
           {/* FOOTER - BRAND */}
           <div className="footer-brand">

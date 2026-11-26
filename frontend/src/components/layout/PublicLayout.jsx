@@ -28,7 +28,7 @@ function PublicLayout() {
   }, [pathname, hash]);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="ll-site flex min-h-screen flex-col">
       {/* PUBLIC NAVBAR */}
       <Navbar />
 

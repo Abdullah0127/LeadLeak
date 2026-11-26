@@ -25,7 +25,8 @@ function Navbar() {
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -40,30 +41,20 @@ function Navbar() {
   ];
 
   // NAVBAR COMPONENT STYLES
-  const navLinkStyle = `group relative py-1 text-sm font-medium transition-colors duration-200 after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-0 after:rounded-full after:bg-current after:transition-all after:duration-300 hover:after:w-full ${
-    isScrolled
-      ? "text-white/80 hover:text-white"
-      : "text-muted hover:text-brand-700"
-  }`;
+  const navLinkStyle =
+    "group relative py-1 text-[15px] font-medium text-charcoal transition-colors duration-300 hover:text-forest-800 after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-0 after:bg-forest-800 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest-800";
 
   return (
-    <header className="sticky top-3 z-50 mx-auto w-full max-w-6xl px-4">
+    <header
+      className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
+        isScrolled
+          ? "border-forest-900/10 bg-white/95 shadow-[0_10px_30px_-18px_rgba(21,61,46,0.35)] backdrop-blur-xl"
+          : "border-transparent bg-white"
+      }`}
+    >
       {/* NAVBAR CONTAINER */}
-      <nav
-        className={`relative overflow-hidden rounded-2xl border transition-all duration-300 ${
-          isScrolled
-            ? "border-brand-600 bg-brand-700 shadow-xl shadow-brand-900/15"
-            : "border-border bg-white/95 shadow-sm shadow-black/5 backdrop-blur-xl"
-        }`}
-      >
-        {/* NAVBAR SCROLL PROGRESS */}
-        <motion.div
-          aria-hidden="true"
-          style={{ scaleX: progressScale }}
-          className="absolute bottom-0 left-0 h-[2px] w-full origin-left bg-gradient-to-r from-brand-500 to-emerald-300"
-        />
-
-        <div className="flex items-center justify-between px-5 py-3 md:px-7">
+      <nav className="relative mx-auto w-full max-w-7xl" aria-label="Main">
+        <div className="flex items-center justify-between px-5 py-3.5 md:px-8">
           {/* BRAND LOGO */}
           <Link
             to="/"
@@ -78,7 +69,7 @@ function Navbar() {
           </Link>
 
           {/* DESKTOP NAVIGATION */}
-          <div className="hidden items-center gap-9 md:flex">
+          <div className="hidden items-center gap-10 md:flex">
             {navLinks.map((link) => (
               <Link key={link.label} to={link.href} className={navLinkStyle}>
                 {link.label}
@@ -87,22 +78,18 @@ function Navbar() {
           </div>
 
           {/* DESKTOP ACTIONS */}
-          <div className="hidden items-center gap-5 md:flex">
+          <div className="hidden items-center gap-6 md:flex">
             <Link
               to="/login"
-              className={`text-sm font-semibold transition-colors ${
-                isScrolled
-                  ? "text-white hover:text-brand-100"
-                  : "text-ink hover:text-brand-700"
-              }`}
+              className="text-[15px] font-semibold text-forest-900 transition-colors duration-300 hover:text-forest-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest-800"
             >
               Log in
             </Link>
 
             <Button
               onClick={() => navigate("/register")}
-              variant={isScrolled ? "secondary" : "primary"}
-              className="rounded-xl px-5"
+              variant="forest"
+              className="rounded-full px-6 py-2.5"
             >
               Get Started
             </Button>
@@ -112,11 +99,7 @@ function Navbar() {
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors md:hidden ${
-              isScrolled
-                ? "border-white/20 text-white hover:bg-white/10"
-                : "border-border text-ink hover:bg-surface"
-            }`}
+            className="rounded-full border border-forest-900/20 px-5 py-2 text-sm font-semibold text-forest-900 transition-colors hover:bg-cream-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-800 md:hidden"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
@@ -126,11 +109,7 @@ function Navbar() {
 
         {/* MOBILE NAVIGATION */}
         {menuOpen && (
-          <div
-            className={`border-t px-5 py-5 md:hidden ${
-              isScrolled ? "border-white/15" : "border-border"
-            }`}
-          >
+          <div className="border-t border-forest-900/10 bg-white px-5 py-6 md:hidden">
             <div className="flex flex-col gap-5">
               {navLinks.map((link) => (
                 <Link
@@ -143,17 +122,11 @@ function Navbar() {
                 </Link>
               ))}
 
-              <div
-                className={`flex flex-col gap-4 border-t pt-5 ${
-                  isScrolled ? "border-white/15" : "border-border"
-                }`}
-              >
+              <div className="flex flex-col gap-4 border-t border-forest-900/10 pt-5">
                 <Link
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className={`text-sm font-semibold ${
-                    isScrolled ? "text-white" : "text-ink"
-                  }`}
+                  className="text-[15px] font-semibold text-forest-900"
                 >
                   Log in
                 </Link>
@@ -163,8 +136,8 @@ function Navbar() {
                     setMenuOpen(false);
                     navigate("/register");
                   }}
-                  variant={isScrolled ? "secondary" : "primary"}
-                  className="w-full rounded-xl"
+                  variant="forest"
+                  className="w-full rounded-full"
                 >
                   Get Started
                 </Button>
@@ -173,6 +146,13 @@ function Navbar() {
           </div>
         )}
       </nav>
+
+      {/* NAVBAR SCROLL PROGRESS */}
+      <motion.div
+        aria-hidden="true"
+        style={{ scaleX: progressScale }}
+        className="absolute bottom-0 left-0 h-[2px] w-full origin-left bg-gradient-to-r from-forest-800 to-sage"
+      />
     </header>
   );
 }

@@ -13,6 +13,9 @@ function Button({
     primary: "bg-brand-700 text-white hover:bg-brand-600",
     secondary: "border border-border bg-white text-ink hover:bg-surface",
     danger: "bg-red-600 text-white hover:bg-red-700",
+    forest:
+      "bg-forest-900 text-white hover:bg-forest-800 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-forest-900/20",
+    sage: "bg-sage text-forest-900 hover:bg-lime hover:-translate-y-0.5",
   };
 
   return (

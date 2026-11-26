@@ -106,8 +106,8 @@ function CheckIcon() {
 
 function Pricing() {
   return (
-    <section className="pricing-section" id="pricing">
-      <div className="pricing-container">
+    <section className="pricing-section ll-section" id="pricing">
+      <div className="ll-container">
         <motion.div
           className="pricing-heading"
           initial={{ opacity: 0, y: 24 }}
@@ -115,15 +115,15 @@ function Pricing() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="pricing-eyebrow">SIMPLE, TRANSPARENT PRICING</span>
+          <span className="ll-eyebrow pricing-eyebrow">SIMPLE, TRANSPARENT PRICING</span>
 
-          <h2>
+          <h2 className="ll-title">
             Plans that work best
             <br />
             <span>for your business.</span>
           </h2>
 
-          <p>
+          <p className="ll-lead">
             Choose the right level of protection for your websites. Start small
             and grow whenever your business needs more.
           </p>

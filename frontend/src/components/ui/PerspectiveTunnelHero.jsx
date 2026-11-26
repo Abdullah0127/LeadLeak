@@ -176,7 +176,7 @@ function TunnelCard({ card, progress, pointer, total, stage }) {
       }}
       className="pointer-events-auto absolute left-1/2 top-1/2 aspect-[4/5] cursor-pointer select-none will-change-transform"
     >
-      <div className="group relative h-full w-full overflow-hidden rounded-2xl bg-neutral-200 shadow-2xl shadow-neutral-950/30 ring-1 ring-white/50 transition-all duration-500 hover:ring-2 hover:ring-brand-500/80">
+      <div className="group relative h-full w-full overflow-hidden rounded-[1.75rem] bg-cream-2 shadow-2xl shadow-forest-900/30 ring-1 ring-white/50 transition-all duration-500 hover:ring-2 hover:ring-sage">
         <img
           src={card.item.src}
           alt={card.item.title}
@@ -186,27 +186,27 @@ function TunnelCard({ card, progress, pointer, total, stage }) {
         />
 
         {/* TUNNEL CARD - READABILITY GRADIENT */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#07140f]/90 via-[#07140f]/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#153D2E]/90 via-[#153D2E]/10 to-transparent" />
 
         {/* TUNNEL CARD - LIVE STATUS CHIP */}
         <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 shadow-sm backdrop-blur-md">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-500" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-forest-800 opacity-60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-forest-800" />
           </span>
 
-          <span className="font-mono text-[9px] font-semibold uppercase tracking-wider text-brand-700">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-forest-900">
             {card.item.status}
           </span>
         </div>
 
         {/* TUNNEL CARD - TITLE AND METRIC */}
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 sm:p-4">
-          <span className="font-mono text-[10px] uppercase leading-snug tracking-widest text-white drop-shadow-md sm:text-xs">
+          <span className="text-[10px] font-medium uppercase leading-snug tracking-widest text-white drop-shadow-md sm:text-xs">
             {card.item.title}
           </span>
 
-          <span className="shrink-0 rounded-md border border-white/25 bg-white/15 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-white backdrop-blur-md sm:text-[10px]">
+          <span className="shrink-0 rounded-full border border-white/25 bg-white/15 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur-md sm:text-[10px]">
             {card.item.metric}
           </span>
         </div>
@@ -284,31 +284,31 @@ function PerspectiveTunnelHero() {
   const textColor = useTransform(
     smoothProgress,
     [0, IMAGE_FADE_END],
-    ["rgba(255, 255, 255, 1)", "rgba(24, 61, 50, 1)"],
+    ["rgba(255, 255, 255, 1)", "rgba(21, 61, 46, 1)"],
   );
 
   const accentColor = useTransform(
     smoothProgress,
     [0, IMAGE_FADE_END],
-    ["rgba(169, 209, 181, 1)", "rgba(47, 112, 88, 1)"],
+    ["rgba(201, 227, 161, 1)", "rgba(27, 73, 54, 1)"],
   );
 
   const bodyColor = useTransform(
     smoothProgress,
     [0, IMAGE_FADE_END],
-    ["rgba(255, 255, 255, 0.92)", "rgba(83, 108, 91, 1)"],
+    ["rgba(255, 255, 255, 0.92)", "rgba(62, 68, 64, 1)"],
   );
 
   const chipBackground = useTransform(
     smoothProgress,
     [0, IMAGE_FADE_END],
-    ["rgba(255, 255, 255, 0.14)", "rgba(237, 245, 240, 1)"],
+    ["rgba(255, 255, 255, 0.14)", "rgba(201, 227, 161, 0.45)"],
   );
 
   const chipBorder = useTransform(
     smoothProgress,
     [0, IMAGE_FADE_END],
-    ["rgba(255, 255, 255, 0.35)", "rgba(216, 233, 221, 1)"],
+    ["rgba(255, 255, 255, 0.35)", "rgba(27, 73, 54, 0.2)"],
   );
 
   const textShadow = useTransform(
@@ -322,7 +322,7 @@ function PerspectiveTunnelHero() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[220vh] bg-surface"
+      className="relative h-[220vh] bg-cream"
       aria-label="LeadLeak website monitoring"
     >
       <div
@@ -347,10 +347,10 @@ function PerspectiveTunnelHero() {
           />
 
           {/* HOME PAGE - BRAND TINT FOR TEXT READABILITY */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#07140f]/55 via-[#07140f]/30 to-[#07140f]/65" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#153D2E]/60 via-[#153D2E]/35 to-[#153D2E]/70" />
 
           {/* HOME PAGE - SOFT SPOTLIGHT BEHIND HERO TEXT */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(7,20,15,0.55),transparent_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(21,61,46,0.55),transparent_100%)]" />
 
           {/* HOME PAGE - RINGS ON IMAGE */}
           <div className="absolute left-1/2 top-1/2 h-[48vmin] w-[48vmin] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20" />
@@ -363,13 +363,13 @@ function PerspectiveTunnelHero() {
           style={{ opacity: guideOpacity }}
           className="pointer-events-none absolute inset-0 flex items-center justify-center"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(#d8e9dd_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_60%,transparent_100%)] opacity-70" />
+          <div className="absolute inset-0 bg-[radial-gradient(#c9e3a1_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_60%,transparent_100%)] opacity-70" />
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(47,112,88,0.13)_0%,transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,227,161,0.35)_0%,transparent_70%)]" />
 
-          <div className="absolute h-[48vmin] w-[48vmin] rounded-full border border-brand-500/15" />
+          <div className="absolute h-[48vmin] w-[48vmin] rounded-full border border-forest-800/15" />
 
-          <div className="absolute h-[76vmin] w-[76vmin] rounded-full border border-dashed border-border" />
+          <div className="absolute h-[76vmin] w-[76vmin] rounded-full border border-dashed border-forest-800/15" />
         </motion.div>
 
         {/* HOME PAGE - CENTRAL HERO CONTENT */}
@@ -380,23 +380,23 @@ function PerspectiveTunnelHero() {
             color: textColor,
             textShadow,
           }}
-          className="pointer-events-none z-0 flex max-w-3xl flex-col items-center px-6 text-center"
+          className="pointer-events-none z-0 flex max-w-4xl flex-col items-center px-6 text-center"
         >
           <motion.p
             style={{
               backgroundColor: chipBackground,
               borderColor: chipBorder,
             }}
-            className="mb-6 inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] backdrop-blur-md sm:tracking-[0.35em]"
+            className="mb-6 inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] backdrop-blur-md sm:tracking-[0.3em]"
           >
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-70" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-sage" />
             </span>
             SMART WEBSITE MONITORING
           </motion.p>
 
-          <h1 className="text-5xl font-bold leading-[0.9] tracking-tighter sm:text-7xl md:text-8xl">
+          <h1 className="font-display text-6xl font-medium leading-[0.92] tracking-tight sm:text-7xl md:text-8xl lg:text-[7.5rem]">
             NEVER LOSE
             <br />
             <motion.span style={{ color: accentColor }}>A LEAD.</motion.span>
@@ -404,7 +404,7 @@ function PerspectiveTunnelHero() {
 
           <motion.p
             style={{ color: bodyColor }}
-            className="mt-6 max-w-[40ch] text-sm font-normal leading-6 sm:text-base sm:leading-7"
+            className="mt-7 max-w-[44ch] text-sm font-normal leading-6 sm:text-base sm:leading-7"
           >
             Detect website problems early, monitor performance, and protect
             every opportunity to connect with your customers.
@@ -444,7 +444,7 @@ function PerspectiveTunnelHero() {
         {/* HOME PAGE - SCROLL PROMPT */}
         <motion.div
           style={{ opacity: promptOpacity }}
-          className="pointer-events-none absolute bottom-8 z-20 flex flex-col items-center gap-2 font-mono text-xs uppercase tracking-[0.3em] text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,0.5)]"
+          className="pointer-events-none absolute bottom-8 z-20 flex flex-col items-center gap-2 text-xs font-medium uppercase tracking-[0.3em] text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,0.5)]"
         >
           <span>Scroll to Explore</span>
 

@@ -82,19 +82,21 @@ const audiences = [
 
 function WhoItsFor() {
   return (
-    <section className="who-its-for-section">
-      <div className="who-its-for-container">
+    <section className="who-its-for-section ll-section">
+      <div className="ll-container">
         {/* WHO IT'S FOR - HEADING */}
         <div className="who-its-for-heading">
-          <span className="who-its-for-eyebrow">WHO IT'S FOR</span>
+          <div>
+            <span className="ll-eyebrow">WHO IT'S FOR</span>
 
-          <h2>
-            One platform.
-            <br />
-            <span>Different needs. One goal.</span>
-          </h2>
+            <h2 className="ll-title who-its-for-title">
+              One platform.
+              <br />
+              <span>Different needs. One goal.</span>
+            </h2>
+          </div>
 
-          <p>
+          <p className="ll-lead who-its-for-copy">
             Whether you manage client websites or run your own business,
             LeadLeak helps you stay aware of website problems.
           </p>

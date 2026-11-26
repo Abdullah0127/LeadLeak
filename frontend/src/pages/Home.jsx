@@ -2,6 +2,7 @@ import PerspectiveTunnelHero from "../components/ui/PerspectiveTunnelHero";
 import FeaturesWithPanel from "../components/ui/FeaturesWithPanel";
 import HowItWorks from "../components/ui/HowItWorks";
 import WhoItsFor from "../components/ui/WhoItsFor";
+import Testimonials from "../components/ui/Testimonials";
 import Pricing from "../components/ui/Pricing";
 import FAQ from "../components/ui/FAQ";
 import FinalCTA from "../components/ui/FinalCTA";
@@ -20,6 +21,9 @@ function Home() {
 
       {/* HOME PAGE - TARGET AUDIENCE */}
       <WhoItsFor />
+
+      {/* HOME PAGE - TESTIMONIALS (PLACEHOLDER CONTENT) */}
+      <Testimonials />
 
       {/* HOME PAGE - PRICING */}
       <Pricing />

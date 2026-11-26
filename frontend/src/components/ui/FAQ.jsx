@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import "./FAQ.css";
 
 const faqData = [
@@ -73,143 +73,108 @@ function ShieldIcon() {
 
 function FAQ() {
   const [activeId, setActiveId] = useState(1);
+  const reduceMotion = useReducedMotion();
 
   const toggleFAQ = (id) => {
     setActiveId((current) => (current === id ? null : id));
   };
 
   return (
-    <section className="faq-chat-section" id="faq">
-      <div className="faq-chat-container">
-        {/* FAQ HEADING */}
+    <section className="faq-section ll-section" id="faq">
+      <div className="ll-container faq-layout">
+        {/* FAQ - STICKY INTRODUCTION COLUMN */}
         <motion.div
-          className="faq-chat-heading"
-          initial={{ opacity: 0, y: 24 }}
+          className="faq-intro"
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: reduceMotion ? 0 : 0.6 }}
         >
-          <span className="faq-chat-eyebrow">QUESTIONS & ANSWERS</span>
+          <span className="ll-eyebrow">QUESTIONS & ANSWERS</span>
 
-          <h2>
+          <h2 className="ll-title faq-title">
             Got questions?
             <br />
             <span>We've got answers.</span>
           </h2>
 
-          <p>
+          <p className="ll-lead faq-copy">
             Here are a few things you might want to know about protecting your
             website with LeadLeak.
           </p>
-        </motion.div>
 
-        {/* FAQ CHAT ACCORDION */}
-        <motion.div
-          className="faq-chat-box"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="faq-chat-timestamp">
+          <div className="faq-support">
             <span className="faq-support-avatar">
               <ShieldIcon />
             </span>
 
             <span className="faq-support-info">
               <strong>LeadLeak Support</strong>
-              <small>
-                <span className="faq-online-dot" />
-                Frequently asked questions
-              </small>
+              <small>Frequently asked questions</small>
             </span>
           </div>
 
-          <div className="faq-chat-list">
-            {faqData.map((item, index) => {
-              const isOpen = activeId === item.id;
-
-              return (
-                <div className="faq-chat-item" key={item.id}>
-                  {/* QUESTION MESSAGE */}
-                  <div className="faq-question-row">
-                    <button
-                      type="button"
-                      className={`faq-question-bubble ${
-                        isOpen ? "faq-question-active" : ""
-                      }`}
-                      onClick={() => toggleFAQ(item.id)}
-                      aria-expanded={isOpen}
-                      aria-controls={`faq-answer-${item.id}`}
-                      id={`faq-question-${item.id}`}
-                    >
-                      {item.icon && (
-                        <span
-                          className={`faq-message-icon icon-${item.iconPosition || "right"}`}
-                          aria-hidden="true"
-                        >
-                          {item.icon}
-                        </span>
-                      )}
-
-                      <span>{item.question}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`faq-expand-button ${
-                        isOpen ? "faq-expand-active" : ""
-                      }`}
-                      onClick={() => toggleFAQ(item.id)}
-                      aria-label={
-                        isOpen
-                          ? `Close ${item.question}`
-                          : `Open ${item.question}`
-                      }
-                      aria-expanded={isOpen}
-                      aria-controls={`faq-answer-${item.id}`}
-                    >
-                      {isOpen ? "−" : "+"}
-                    </button>
-                  </div>
-
-                  {/* ANSWER MESSAGE */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        id={`faq-answer-${item.id}`}
-                        className="faq-answer-row"
-                        initial={{ opacity: 0, height: 0, y: -8 }}
-                        animate={{ opacity: 1, height: "auto", y: 0 }}
-                        exit={{ opacity: 0, height: 0, y: -8 }}
-                        transition={{
-                          duration: 0.3,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <div
-                          className="faq-answer-bubble"
-                          role="region"
-                          aria-labelledby={`faq-question-${item.id}`}
-                        >
-                          {item.answer}
-                        </div>
-
-                        <span className="faq-answer-avatar" aria-hidden="true">
-                          <ShieldIcon />
-                        </span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="faq-chat-footer">
+          <div className="faq-support-note">
             <span className="faq-online-dot" />
             Here to help you keep your website protected.
           </div>
+        </motion.div>
+
+        {/* FAQ - ACCORDION */}
+        <motion.div
+          className="faq-list"
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: reduceMotion ? 0 : 0.6 }}
+        >
+          {faqData.map((item) => {
+            const isOpen = activeId === item.id;
+
+            return (
+              <div
+                className={`faq-item ${isOpen ? "is-open" : ""}`}
+                key={item.id}
+              >
+                <h3 className="faq-item-heading">
+                  <button
+                    type="button"
+                    className="faq-question"
+                    onClick={() => toggleFAQ(item.id)}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${item.id}`}
+                    id={`faq-question-${item.id}`}
+                  >
+                    <span className="faq-question-text">{item.question}</span>
+
+                    <span className="faq-toggle" aria-hidden="true">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+                </h3>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      id={`faq-answer-${item.id}`}
+                      className="faq-answer"
+                      role="region"
+                      aria-labelledby={`faq-question-${item.id}`}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{
+                        duration: reduceMotion ? 0 : 0.3,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <p>{item.answer}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
     </section>
